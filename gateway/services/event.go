@@ -110,9 +110,21 @@ var EventRoutes = arbor.RouteCollection{
 		"/event/checkin/",
 		alice.New(middleware.AuthMiddleware([]authtoken.Role{authtoken.AdminRole, authtoken.AttendeeRole, authtoken.ApplicantRole, authtoken.StaffRole, authtoken.MentorRole}), middleware.IdentificationMiddleware).ThenFunc(Checkin).ServeHTTP,
 	},
+	// My changes
+	arbor.Route{
+		"GetEventsInBuilding",
+		"GET",
+		"/event/building/{tag}/",
+		alice.New(middleware.AuthMiddleware([]authtoken.Role{authtoken.AdminRole, authtoken.StaffRole}), middleware.IdentificationMiddleware).ThenFunc(GetEventsInBuilding).ServeHTTP,
+	},
 }
 
-func GetEvent(w http.ResponseWriter, r *http.Request) {
+// My changes
+func GetEventsInBuilding(w http.ResponseWriter, r *http.Request) {
+	arbor.GET(w, config.EVENT_SERVICE+r.URL.String(), EventFormat, "", r)
+}
+
+func GetEvent(w http.ResponseWriter, r *http.Request) {	
 	arbor.GET(w, config.EVENT_SERVICE+r.URL.String(), EventFormat, "", r)
 }
 

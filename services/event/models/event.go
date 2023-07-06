@@ -15,6 +15,7 @@ type EventPublic struct {
 	EventType   string          `json:"eventType"   validate:"required,oneof=MEAL SPEAKER WORKSHOP MINIEVENT QNA OTHER"`
 	Points      int             `json:"points"`
 	IsAsync     bool            `json:"isAsync"`
+
 }
 
 // Struct to encapsulate hidden fields

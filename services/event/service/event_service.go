@@ -37,6 +37,32 @@ func Initialize() error {
 }
 
 /*
+	My changes
+*/
+func GetEventsInBuilding[T models.Event](tag string) (*models.EventList[T], error) {
+	// Search all events in the database for if they have a location tag that matches the passed tag
+	query := map[string]interface{}{"locations.tags": tag }
+
+	switch reflect.TypeOf(*new(T)).Name() {
+	case reflect.TypeOf(*new(models.EventPublic)).Name():
+		query["isprivate"] = false
+	}
+
+	events := []T{}
+	// nil implies there are no filters on the query, therefore everything in the "events" collection is returned.
+	err := db.FindAll("events", query, &events, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	event_list := models.EventList[T]{
+		Events: events,
+	}
+
+	return &event_list, nil
+}
+
+/*
 	Returns the event with the given id
 */
 func GetEvent[T models.Event](id string) (*T, error) {

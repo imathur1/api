@@ -40,6 +40,34 @@ func SetupController(route *mux.Route) {
 	metrics.RegisterHandler("/track/user/{id}/", GetUserTrackingInfo, "GET", router)
 
 	metrics.RegisterHandler("/internal/stats/", GetStats, "GET", router)
+
+	// My changes
+	metrics.RegisterHandler("/building/{tag}/", GetEventsInBuilding, "GET", router)
+}
+
+
+/*
+	My changes
+*/
+func GetEventsInBuilding(w http.ResponseWriter, r *http.Request) {
+	tag := mux.Vars(r)["tag"]
+
+	if tag == "" {
+		errors.WriteError(
+			w,
+			r,
+			errors.MalformedRequestError("Must provide building tag in request url.", "Must provide building tag in request url."),
+		)
+		return
+	}
+
+	code, err := service.GetEventsInBuilding[models.EventDB](tag)
+	if err != nil {
+		errors.WriteError(w, r, errors.DatabaseError(err.Error(), "Failed to receive event code information from database"))
+		return
+	}
+
+	json.NewEncoder(w).Encode(code)
 }
 
 /*
